@@ -1,0 +1,23 @@
+import scipy as sp
+
+num_train_examples = train_data.shape[0]
+num_dev_examples = dev_data.shape[0]
+
+tx_train_plus = sp.sparse.hstack((
+                    tx_train, 
+                    train_data['number_of_upvotes_of_request_at_retrieval'].values.reshape(num_train_examples, 1), 
+                    train_data['request_number_of_comments_at_retrieval'].values.reshape(num_train_examples, 1),
+                ), format='csr')
+
+tx_dev_plus = sp.sparse.hstack((
+                    tx_dev, 
+                    dev_data['number_of_upvotes_of_request_at_retrieval'].values.reshape(num_dev_examples, 1), 
+                    dev_data['request_number_of_comments_at_retrieval'].values.reshape(num_dev_examples, 1),
+                ), format='csr')
+
+lr_weight.fit(tx_train_plus, train_labels)
+lrw_accuracy = lr_weight.score(tx_dev_plus, dev_labels) 
+lrw_predicted = lr_weight.predict(tx_dev_plus)
+lrw_f1_score = metrics.f1_score(lrw_predicted, dev_labels, average=None)
+print "Accuracy: ", lrw_accuracy
+print "F1 Score: ", lrw_f1_score
